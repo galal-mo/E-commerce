@@ -13,8 +13,8 @@ const phoneRegExp =
 export default function Register() {
   const navigate = useNavigate()
   const validationSchema = Yup.object({
-    name: Yup.string("").matches(/^[A-Za-z]{3,20}/, "please use letters onyl,and enter at least 3 letters")
-      .min(3, "must be more tha 3")
+    name: Yup.string("").matches(/^[A-Za-z]{3,20}/, "please use letters only,and enter at least 3 letters")
+      .min(3, "must be more than 3")
       .max(15)
       .required("name is required"),
     email: Yup.string().matches(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/, "please enter valid email")
