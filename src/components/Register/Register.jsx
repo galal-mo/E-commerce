@@ -5,6 +5,7 @@ import * as Yup from "yup";
 import axios from "axios";
 import { InfinitySpin } from "react-loader-spinner";
 import { useNavigate } from "react-router-dom";
+import toast, { Toaster } from 'react-hot-toast';
 
 const phoneRegExp =
   /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
@@ -12,18 +13,17 @@ const phoneRegExp =
 export default function Register() {
   const navigate = useNavigate()
   const validationSchema = Yup.object({
-    name: Yup.string("must be string")
+    name: Yup.string("").matches(/^[A-Za-z]{3,20}/, "please use letters onyl,and enter at least 3 letters")
       .min(3, "must be more tha 3")
       .max(15)
       .required("name is required"),
-    email: Yup.string()
-      .email("Email format is not valid")
+    email: Yup.string().matches(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/, "please enter valid email")
       .required("Email is reuired"),
     phone: Yup.string()
       .matches(phoneRegExp, "Phone number is not valid")
       .required("phone is reuired"),
     password: Yup.string()
-      .matches(/^[A-Z][a-z0-9]{5,20}/, "must be at least 3 chars")
+      .matches(/[A-Z*a-z0-9]{5,20}/, "must be at least 5 chars")
       .required("password is reuired"),
     rePassword: Yup.string()
       .oneOf([Yup.ref("password")], "doesnot match the password")
@@ -32,15 +32,22 @@ export default function Register() {
   const [isLoading, setLoading] = useState(false);
 
   async function sendData(values) {
-    setLoading(true)
-    let { data } = await axios.post(
-      "https://ecommerce.routemisr.com/api/v1/auth/signup",
-      values
-    );
-    console.log(data, data.message);
-    if (data.message == 'success')
-      setLoading(false);
-    navigate('/LogIn')
+    try {
+      setLoading(true)
+      let { data } = await axios.post(
+        "https://ecommerce.routemisr.com/api/v1/auth/signup",
+        values
+      );
+      // console.log(data, data.message);
+      if (data.message == 'success') {
+        setLoading(false);
+        navigate('/LogIn')
+      }
+    }
+    catch(error) { 
+        setLoading(false);
+        toast.error("Please check your information")
+    }
   }
 
   let formik = useFormik({
@@ -59,6 +66,7 @@ export default function Register() {
     <>
       <div className="w-75  mx-auto">
         <h3>Register Now: </h3>
+        <Toaster/>
         <form onSubmit={formik.handleSubmit}>
           <label htmlFor="userName">name:</label>
           <input

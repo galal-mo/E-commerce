@@ -6,6 +6,7 @@ import axios from "axios";
 import { InfinitySpin } from "react-loader-spinner";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { UserContext } from "../../Contexts/UserContext";
+import toast, { Toaster } from "react-hot-toast";
 
 
 
@@ -21,12 +22,13 @@ export default function LogIn() {
     const [isLoading, setLoading] = useState(false);
 
     async function sendData(values) {
+        try{
         setLoading(true)
         let { data } = await axios.post(
             "https://ecommerce.routemisr.com/api/v1/auth/signin",
             values
         );
-        console.log(data, data.message);
+        // console.log(data, data.message);
         if (data.message == 'success') {
             setLoading(false);
             localStorage.setItem('usertoken', data.token)
@@ -37,7 +39,11 @@ export default function LogIn() {
             setLoading(false);
             console.log("incorrect email or password");
         }
+    }catch(error) { 
+        setLoading(false);
+        toast.error("Please check your information")
     }
+}
 
     let formik = useFormik({
         initialValues: {
@@ -52,6 +58,7 @@ export default function LogIn() {
         <>
             <div className="w-75  mx-auto mt-2">
                 <h3>LogIn Now: </h3>
+                <Toaster/>
                 <form onSubmit={formik.handleSubmit}>
 
                     <label htmlFor="userEmail">Email:</label>
